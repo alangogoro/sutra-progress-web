@@ -1,0 +1,21 @@
+{
+  "name": "sutra-progress-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "水陸法會經文進度追蹤器 — 離線行動網頁工具",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.0.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.0"
+  }
+}
