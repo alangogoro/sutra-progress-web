@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [sutra-progress-tracker]
+    branches: [main]
 
 permissions:
   contents: read
