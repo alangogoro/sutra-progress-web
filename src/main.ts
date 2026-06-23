@@ -109,7 +109,10 @@ function showConfirmDialog(message: string): Promise<boolean> {
 // ─── Home ───────────────────────────────────────────────────────────────────
 
 async function showHome(): Promise<void> {
-  const sutras = await getAllSutras();
+  const [sutras, settings] = await Promise.all([getAllSutras(), getSettings()]);
+  const greeting = settings.userName
+    ? `你好，${escHtml(settings.userName)} 菩薩`
+    : "你好，菩薩";
 
   const cardsHTML = sutras.map((s) => {
     const pct = s.targetCount > 0 ? Math.round((s.completedCount / s.targetCount) * 100) : 0;
@@ -130,6 +133,7 @@ async function showHome(): Promise<void> {
   app.innerHTML = `
     <div class="page">
       <div class="home-header">
+        <span class="home-greeting">${greeting}</span>
         <button class="btn-settings" id="btn-settings" type="button" aria-label="設定">
           ${gearSVG()}
           設定
@@ -185,8 +189,7 @@ function renderDetail(sutra: Sutra): void {
         </p>
       </div>
       <div class="detail-actions">
-        <button class="btn-danger" id="btn-dec" type="button" ${sutra.completedCount <= 0 ? "disabled" : ""}>−1</button>
-        <button class="btn-primary" id="btn-inc" type="button" ${sutra.completedCount >= sutra.targetCount ? "disabled" : ""}>+1</button>
+        <button class="btn-primary" id="btn-inc" type="button" ${sutra.completedCount >= sutra.targetCount ? "disabled" : ""}>加一部</button>
       </div>
     </div>
   `;
@@ -194,18 +197,9 @@ function renderDetail(sutra: Sutra): void {
   app.querySelector("#btn-back")!.addEventListener("click", () => navigate("home"));
 
   app.querySelector("#btn-inc")!.addEventListener("click", async () => {
-    const confirmed = await showConfirmDialog(`確定要將「${sutra.name}」的進度 +1 嗎？`);
+    const confirmed = await showConfirmDialog(`確定要將「${sutra.name}」加一部嗎？`);
     if (confirmed) {
       await updateSutraProgress(sutra.id, 1);
-      const updated = await getSutra(sutra.id);
-      if (updated) renderDetail(updated);
-    }
-  });
-
-  app.querySelector("#btn-dec")!.addEventListener("click", async () => {
-    const confirmed = await showConfirmDialog(`確定要將「${sutra.name}」的進度 −1 嗎？`);
-    if (confirmed) {
-      await updateSutraProgress(sutra.id, -1);
       const updated = await getSutra(sutra.id);
       if (updated) renderDetail(updated);
     }
